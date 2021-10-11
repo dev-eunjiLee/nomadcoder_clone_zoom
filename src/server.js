@@ -1,6 +1,7 @@
 import http from "http"; // * node.js에 내장되어 있기 때문에 따로 설치할 필요가 없다.
 import WebSocket from "ws";
 import express from "express";
+import * as events from "events";
 
 const app = express();
 
@@ -27,6 +28,12 @@ const wss = new WebSocket.Server({server}) // * WEBSOCKET 서버
 
 // * new Websocket.Server() 파라미터 중 server값에 대한 정보
 // * @param {(http.Server|https.Server)} [options.server] A pre-created HTTP/S server to use
+
+function handleConnection(socket){
+    console.log(socket) // * websocket 출력
+}
+
+wss.on("connection", handleConnection)
 
 server.listen(3000, handleListen)
 
