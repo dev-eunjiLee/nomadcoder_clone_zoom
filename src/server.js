@@ -1,7 +1,3 @@
-for (var i = 0; i < 4; i++) {
-  console.log("HELLO ESLINT");
-}
-
 import http from "http"; // * node.js에 내장되어 있기 때문에 따로 설치할 필요가 없다.
 import WebSocket from "ws";
 import express from "express";
@@ -35,7 +31,18 @@ const wss = new WebSocket.Server({ server }); // * WEBSOCKET 서버
 
 wss.on("connection", (socket) => {
   console.log("Connected To Browser 🐱‍🏍");
-  socket.send("hello");
+
+  // console.log('socket: ', socket)
+
+  socket.on("close", () => { // * 브라우저와의 연결이 끊길 때 발생(ex. 브라우저 끄기)
+    console.log("Disconnected from the Browser XX")
+  })
+
+  socket.on("message", (message) => {
+    console.log('New Message from Browser: ', message)
+  })
+
+  socket.send("hello"); // * socket이 연결되자마자 hello라는 메세지를 전달
 });
 
 server.listen(3000, handleListen);
