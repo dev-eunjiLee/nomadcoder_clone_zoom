@@ -4,6 +4,7 @@
     <list default="true" id="12495ece-d039-40d3-90c7-4a7523ee7f1f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/public/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/public/js/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/public/view/home.pug" beforeDir="false" afterPath="$PROJECT_DIR$/src/public/view/home.pug" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/server.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -47,7 +48,7 @@
     <property name="nodejs_interpreter_path" value="C:/Program Files/nodejs/node" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="prettierjs.PrettierConfiguration.Package" value="D:\000_Programing\001_Programing\nomadcoder_clone_zoom\node_modules\prettier" />
-    <property name="settings.editor.selected.configurable" value="settings.javascript.linters.eslint" />
+    <property name="settings.editor.selected.configurable" value="settings.javascript.prettier" />
     <property name="ts.external.directory.path" value="C:\Program Files\JetBrains\WebStorm 2021.1.2\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
@@ -72,7 +73,10 @@
       <workItem from="1633941812166" duration="5569000" />
       <workItem from="1633948106438" duration="1564000" />
       <workItem from="1633949721334" duration="4030000" />
-      <workItem from="1634132438232" duration="1831000" />
+      <workItem from="1634132438232" duration="1995000" />
+      <workItem from="1634463227598" duration="1193000" />
+      <workItem from="1634471271557" duration="3815000" />
+      <workItem from="1634563660699" duration="2765000" />
     </task>
     <servers />
   </component>

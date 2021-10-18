@@ -29,20 +29,66 @@ const wss = new WebSocket.Server({ server }); // * WEBSOCKET 서버
 // * new Websocket.Server() 파라미터 중 server값에 대한 정보
 // * @param {(http.Server|https.Server)} [options.server] A pre-created HTTP/S server to use
 
+// * fake database
+const sockets = [];
+
+// * 은지 셀프(10/18 => 1.7)
+function makeMessage(type, payload){
+  const message = JSON.stringify({type, payload})
+  return message
+}
+
 wss.on("connection", (socket) => {
+
+  // * socket이 연결될 때 해당 연결을 sockets 배열에 넣어서 관리
+  sockets.push(socket)
+  console.log('sockets length: ', sockets.length)
+
   console.log("Connected To Browser 🐱‍🏍");
 
   // console.log('socket: ', socket)
 
-  socket.on("close", () => { // * 브라우저와의 연결이 끊길 때 발생(ex. 브라우저 끄기)
-    console.log("Disconnected from the Browser XX")
-  })
+  // * socket.on:: 특정 소켓에 연결되어 이벤트를 리슨한다.
+  socket.on("close", () => {
 
+    console.log(`sockets에서 해당 socket 삭제 전 길이: `, sockets.length)
+
+    for(let i = 0; i<sockets.length; i++){
+      if(sockets[i] === socket){
+        sockets.splice(i, 1);
+        break;
+      }
+    }
+    
+    console.log(`sockets에서 해당 socket 삭제 후 길이: `, sockets.length)
+
+    // * 브라우저와의 연결이 끊길 때 발생(ex. 브라우저 끄기)
+    console.log("Disconnected from the Browser XX");
+  });
+
+
+  // * 모든 것이 메세지가 되기 때문에 프론트에서 보내는 메세지와 닉네임을 구별할 방법이 필요
   socket.on("message", (message) => {
-    console.log('New Message from Browser: ', message)
-  })
+    console.log(message.toString())
+    const {type, payload} = JSON.parse(message.toString());
+    if(type === "nickname"){
+      console.log("nickname: ", payload)
+      socket.send(makeMessage("nickname", payload).toString('utf8'))
+    }else if(type === "new_message"){
+      console.log("new_message: ", payload);
+      sockets.forEach(aSocket => {
+        aSocket.send(makeMessage("new_message", payload).toString('utf8'))
+      })
+    }
 
-  socket.send("hello"); // * socket이 연결되자마자 hello라는 메세지를 전달
+    // * 어느 한 소켓에서 온 메세지를 다른 모든 소켓에 전달
+    // sockets.forEach(aSocket => {
+    //   aSocket.send(message.toString('utf8'))
+    // })
+  });
+
+  // socket.send("hello"); // * socket이 연결되자마자 hello라는 메세지를 전달
 });
+
 
 server.listen(3000, handleListen);
