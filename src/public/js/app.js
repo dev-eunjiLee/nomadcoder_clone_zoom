@@ -19,9 +19,11 @@ socket.addEventListener("open", handleOpen);
 
 socket.addEventListener("message", (message) => {
 
-  const li = document.createElement('li');
 
-  const {type, payload} = JSON.parse(message.data);
+  /** 은지 셀프 작업 10/18
+   const li = document.createElement('li');
+
+   const {type, payload} = JSON.parse(message.data);
 
   if(type === "new_message"){
     li.innerText = payload;
@@ -29,10 +31,11 @@ socket.addEventListener("message", (message) => {
   } else if(type === "nickname"){
     userNickname.innerHTML = payload
   }
+   */
 
-  // const li = document.createElement('li');
-  // li.innerText = message.data;
-  // messageList.append(li)
+  const li = document.createElement('li');
+  li.innerText = message.data;
+  messageList.append(li)
 });
 
 // * 서버와 연결이 끊겼을 때 출력
@@ -65,6 +68,8 @@ function handleNickSubmit(event){
   // socket.send(input.value);
   // * 원래는 위와 같은 형태였으나, message와의 구분을 위해 json 형태로 전송
   socket.send(makeMessage("nickname", input.value))
+  input.value = "";
+
 }
 
 messageForm.addEventListener("submit", handleSubmit);

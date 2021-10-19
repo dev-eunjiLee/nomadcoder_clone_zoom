@@ -42,9 +42,12 @@ wss.on("connection", (socket) => {
 
   // * socket이 연결될 때 해당 연결을 sockets 배열에 넣어서 관리
   sockets.push(socket)
+
+  // * 아직 닉네임을 설정하지 않은 익명의 소켓을 위한 임의 닉네임(Anonymous) 부여
+  socket["nickname"] = "Anon"
+
   console.log('sockets length: ', sockets.length)
 
-  console.log("Connected To Browser 🐱‍🏍");
 
   // console.log('socket: ', socket)
 
@@ -68,17 +71,19 @@ wss.on("connection", (socket) => {
 
 
   // * 모든 것이 메세지가 되기 때문에 프론트에서 보내는 메세지와 닉네임을 구별할 방법이 필요
-  socket.on("message", (message) => {
-    console.log(message.toString())
-    const {type, payload} = JSON.parse(message.toString());
-    if(type === "nickname"){
-      console.log("nickname: ", payload)
-      socket.send(makeMessage("nickname", payload).toString('utf8'))
-    }else if(type === "new_message"){
-      console.log("new_message: ", payload);
-      sockets.forEach(aSocket => {
-        aSocket.send(makeMessage("new_message", payload).toString('utf8'))
-      })
+  socket.on("message", (msg) => {
+    const message = JSON.parse(msg.toString());
+    switch(message.type){
+      case "nickname":
+        console.log(message.payload)
+        socket["nickname"] = message.payload
+        break;
+      case "new_message":
+        sockets.forEach(aSocket => {
+          // * 닉네임과 메세지를 같이 전달
+          aSocket.send(`${socket.nickname}: ${message.payload}`.toString('utf8'))
+        })
+        break;
     }
 
     // * 어느 한 소켓에서 온 메세지를 다른 모든 소켓에 전달
