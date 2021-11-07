@@ -9,11 +9,36 @@ room.hidden = true;
 
 let roomName;
 
+// * 메세지 출력 추가
+function addMessage(message){
+    console.log('addMessage: ', message)
+
+    const ul = room.querySelector('ul');
+    const li = document.createElement('li');
+
+    li.innerText = message;
+    ul.appendChild(li)
+}
+
+function handleMessageSubmit(event){
+    event.preventDefault();
+    const input = room.querySelector("input");
+    const value = input.value
+    // * 백엔드로 new_message 이벤트를 보낸 후, 백에서는 addMessage 이벤트를 실행시킨다.
+    socket.emit('new_message', input.value, roomName, ()=>{
+        addMessage(`You: ${value}`)
+    })
+    input.value = "";
+}
+
 function showRoom(){
     welcome.hidden = true;
     room.hidden = false;
     const h3 = room.querySelector('h3');
     h3.innerText = `Room ${roomName}`
+
+    const form = room.querySelector('form');
+    form.addEventListener('submit', handleMessageSubmit)
 }
 
 function handleRoomSubmit(event){
@@ -27,6 +52,22 @@ function handleRoomSubmit(event){
 }
 
 form.addEventListener("submit", handleRoomSubmit);
+
+// * 새로운 사람이 채팅창에 입장했을 때, 서버에서 방출된 이벤트 잡아서 처리
+socket.on('welcome', ()=>{
+    addMessage('Someone joined!');
+})
+
+// * 누군가가 방을 나갈 때,
+socket.on('bye', () => {
+    addMessage('Someone left ㅠㅠ');
+})
+
+// * 누군가 새 메세지를 보냈을 때,
+socket.on('new_message', (msg) => {
+    addMessage(`other: ${msg}`)
+})
+
 
 // websocket으로 구현한 내용
 // const messageList = document.querySelector("ul");

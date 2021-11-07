@@ -29,15 +29,22 @@ const httpServer = http.createServer(app); // * HTTP 서버
 const wsServer = SocketIO(httpServer)// Socket.IO 사용하여 웹소켓 서버 셋팅 =>  라이브러리의 Server 클래스 사용
 
 wsServer.on("connection", socket => {
-  console.log(socket)
+  console.log(socket.id)
   // *  socket.onAny: 소켓의 어떤 이벤트든 잡아서 처리
   socket.onAny((event, args) => {
     console.log(`Socket Event: ${event}`)
   })
+
+  console.log(socket.rooms)
+  // * 방에 들어갔을 때,
   socket.on('enter_room', (roomName, done) => {
 
     socket.join(roomName); // * roomName으로 소켓을 묶는다(방 생성 혹은 참가)
+    console.log(socket.rooms) // * socket.rooms: Set {<socket.id>, "room1", "room2" ,,,,,}
     done(); // * 프론트에서 메세지 창 HTML 출력
+
+    // * 입장한 방에 있는 모든 사람들에게 이벤트 전달(나를 제외)
+    socket.to(roomName).emit('welcome');
 
     // * 10초가 지나고 백에서 프론트에서 전달한 콜백 함수를 호출하면, 프론트에서 해당 함수를 사용한다.
     // * 백엔드가 이 코드를 실행하는 것이 아니라, 호출만 한다!
@@ -45,6 +52,20 @@ wsServer.on("connection", socket => {
     //   done("hello. i am a backend");
     // }, 10000)
   })
+  // * 방에서 나가려고 할 때,
+  socket.on('disconnecting', ()=>{
+    socket.rooms.forEach((room) => {
+        socket.to(room).emit('bye')
+    })
+  })
+  // * 새로운 메세지가 왔을 때,
+  socket.on('new_message', (msg, roomName, done)=>{
+    socket.to(roomName).emit('new_message', msg)
+    done(); // * 백엔드에서 실행되는게 아니라 프론트에서 실행된다. (백에서는 호출만)
+  })
+
+
+
 })
 
 // const wss = new WebSocket.Server({ server }); // * WEBSOCKET 서버
