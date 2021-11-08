@@ -22,7 +22,7 @@ function addMessage(message){
 
 function handleMessageSubmit(event){
     event.preventDefault();
-    const input = room.querySelector("input");
+    const input = room.querySelector("#msg input"); // * msg 폼 안에 있는 input을 가져온다.
     const value = input.value
     // * 백엔드로 new_message 이벤트를 보낸 후, 백에서는 addMessage 이벤트를 실행시킨다.
     socket.emit('new_message', input.value, roomName, ()=>{
@@ -31,14 +31,24 @@ function handleMessageSubmit(event){
     input.value = "";
 }
 
+function handleNicknameSubmit(event){
+    event.preventDefault();
+
+    const input = room.querySelector('#name input'); // * name 폼 안에 있는 input을 가져온다.
+
+    socket.emit('nickname', input.value)
+}
+
 function showRoom(){
     welcome.hidden = true;
     room.hidden = false;
     const h3 = room.querySelector('h3');
     h3.innerText = `Room ${roomName}`
 
-    const form = room.querySelector('form');
-    form.addEventListener('submit', handleMessageSubmit)
+    const msgForm = room.querySelector('#msg');
+    const nameForm = room.querySelector('#name');
+    msgForm.addEventListener('submit', handleMessageSubmit);
+    nameForm.addEventListener('submit',handleNicknameSubmit);
 }
 
 function handleRoomSubmit(event){
