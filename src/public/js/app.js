@@ -64,18 +64,18 @@ function handleRoomSubmit(event){
 form.addEventListener("submit", handleRoomSubmit);
 
 // * 새로운 사람이 채팅창에 입장했을 때, 서버에서 방출된 이벤트 잡아서 처리
-socket.on('welcome', ()=>{
-    addMessage('Someone joined!');
+socket.on('welcome', (user)=>{
+    addMessage(`${user} JOINED!`);
 })
 
 // * 누군가가 방을 나갈 때,
-socket.on('bye', () => {
-    addMessage('Someone left ㅠㅠ');
+socket.on('bye', (left) => {
+    addMessage(`${left} exit`);
 })
 
 // * 누군가 새 메세지를 보냈을 때,
 socket.on('new_message', (msg) => {
-    addMessage(`other: ${msg}`)
+    addMessage(`${msg}`)
 })
 
 
