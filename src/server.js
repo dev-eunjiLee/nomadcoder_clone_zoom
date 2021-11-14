@@ -28,18 +28,36 @@ const handleListen = () =>
 const httpServer = http.createServer(app); // * HTTP 서버
 const wsServer = SocketIO(httpServer)// Socket.IO 사용하여 웹소켓 서버 셋팅 =>  라이브러리의 Server 클래스 사용
 
+function publicRoom(){
+    // * 어댑터로부터 socket의 id들과 방 이름을 받은 후, 퍼블릭 방만 골라서 리스트로 리턴
+    const {sockets: {adapter: {sids, rooms}}} = wsServer;
+
+    const publicRooms = [];
+
+    rooms.forEach((_, key) => {
+        // * socket private room이 아닌 경우
+        if(sids.get(key) === undefined){
+            publicRooms.push(key)
+        }
+    });
+
+    return publicRooms
+}
+
+
 wsServer.on("connection", socket => {
   // * 처음 소켓에 연결된 경우 익명으로 닉네임 부여
   socket['nickname'] = 'Anonymous'
 
   // *  socket.onAny: 소켓의 어떤 이벤트든 잡아서 처리
   socket.onAny((event, args) => {
+
+    console.log(wsServer.sockets.adapter)
     console.log(`Socket Event: ${event}`)
   })
 
   // * 방에 들어갔을 때,
   socket.on('enter_room', (roomName, done) => {
-
     socket.join(roomName); // * roomName으로 소켓을 묶는다(방 생성 혹은 참가)
     console.log(socket.rooms) // * socket.rooms: Set {<socket.id>, "room1", "room2" ,,,,,}
 
@@ -74,11 +92,3 @@ wsServer.on("connection", socket => {
 
 // * new Websocket.Server() 파라미터 중 server값에 대한 정보
 // * @param {(http.Server|https.Server)} [options.server] A pre-created HTTP/S server to use
-
-// * 은지 셀프(10/18 => 1.7)
-function makeMessage(type, payload){
-  const message = JSON.stringify({type, payload})
-  return message
-}
-
-httpServer.listen(3000, handleListen);
