@@ -1,8 +1,8 @@
 const socket = io(); // 알아서 socket.io를 실행하고 있는 서버를 찾는다.
 
-const welcome = document.getElementById("welcome");
+const welcome = document.getElementById('welcome');
 const form = welcome.querySelector('form');
-const room = document.getElementById("room");
+const room = document.getElementById('room');
 
 // * 처음에는 html에서 ROOM 부분은 안보여주기
 room.hidden = true;
@@ -77,3 +77,6 @@ socket.on('bye', (left) => {
 socket.on('new_message', (msg) => {
     addMessage(`${msg}`)
 })
+
+// * 새로운 public room 이 생겼다는 안내 메세지
+socket.on('room_change', console.log) //* === socket.on('room_change', msg => {console.log()})

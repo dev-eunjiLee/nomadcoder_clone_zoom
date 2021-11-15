@@ -67,6 +67,8 @@ wsServer.on("connection", socket => {
 
     // * 입장한 방에 있는 모든 사람들에게 이벤트 전달(나를 제외)
     socket.to(roomName).emit('welcome', socket.nickname);
+    // * 현재 서버안에 있는 모든 방의 array를 전달
+    wsServer.sockets.emit("room_change", publicRoom())
   })
 
   // * 방에서 나가려고 할 때,
@@ -74,6 +76,8 @@ wsServer.on("connection", socket => {
     socket.rooms.forEach((room) => {
         socket.to(room).emit('bye', socket.nickname)
     })
+      // * 방 삭제 결과를 보기 위해 disconnecting안에 넣었지만, 이 이벤트는 socket이 방을 떠나기 바로 직전에 실행되기 때문에, 이 안에서는 방이 있다.
+      wsServer.sockets.emit('room_change', publicRoom())
   })
 
   // * 새로운 메세지가 왔을 때,
@@ -92,3 +96,4 @@ wsServer.on("connection", socket => {
 
 // * new Websocket.Server() 파라미터 중 server값에 대한 정보
 // * @param {(http.Server|https.Server)} [options.server] A pre-created HTTP/S server to use
+httpServer.listen(3000, handleListen);
