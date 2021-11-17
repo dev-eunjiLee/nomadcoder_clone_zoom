@@ -76,7 +76,10 @@ wsServer.on("connection", socket => {
     socket.rooms.forEach((room) => {
         socket.to(room).emit('bye', socket.nickname)
     })
-      // * 방 삭제 결과를 보기 위해 disconnecting안에 넣었지만, 이 이벤트는 socket이 방을 떠나기 바로 직전에 실행되기 때문에, 이 안에서는 방이 있다.
+
+  })
+
+  socket.on('disconnect', ()=>{
       wsServer.sockets.emit('room_change', publicRoom())
   })
 

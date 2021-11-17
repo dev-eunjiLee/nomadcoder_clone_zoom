@@ -78,5 +78,19 @@ socket.on('new_message', (msg) => {
     addMessage(`${msg}`)
 })
 
-// * 새로운 public room 이 생겼다는 안내 메세지
-socket.on('room_change', console.log) //* === socket.on('room_change', msg => {console.log()})
+// * 새로운 public room 이 생기거나 삭제했을 때 값이 변한다.
+socket.on('room_change',(rooms) => {
+    const roomList = welcome.querySelector('ul');
+    roomList.innerHTML = "" // * 매번
+
+
+    // 남아있는 방이 없는 경우, 방 리스트 초기화
+    if(rooms.length === 0 ) {
+        return;
+    }
+    rooms.forEach(room => {
+        const li = document.createElement('li')
+        li.innerText = room;
+        roomList.appendChild(li)
+    })
+})
