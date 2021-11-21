@@ -44,6 +44,12 @@ function publicRoom(){
     return publicRooms
 }
 
+// * 방 안에 몇명이 있는지 세는 메소드
+function countRoom(roomName){
+    console.log('countRoom: ', roomName)
+    // * roomName을 못 찾을 수 있기 때문에 ?로 표시
+    return wsServer.sockets.adapter.rooms.get(roomName)?.size;
+}
 
 wsServer.on("connection", socket => {
   // * 처음 소켓에 연결된 경우 익명으로 닉네임 부여
@@ -51,22 +57,21 @@ wsServer.on("connection", socket => {
 
   // *  socket.onAny: 소켓의 어떤 이벤트든 잡아서 처리
   socket.onAny((event, args) => {
-
-    console.log(wsServer.sockets.adapter)
+    // console.log(wsServer.sockets.adapter)
     console.log(`Socket Event: ${event}`)
   })
 
   // * 방에 들어갔을 때,
   socket.on('enter_room', (roomName, done) => {
     socket.join(roomName); // * roomName으로 소켓을 묶는다(방 생성 혹은 참가)
+    console.log(socket.adapter.rooms)
     console.log(socket.rooms) // * socket.rooms: Set {<socket.id>, "room1", "room2" ,,,,,}
-
     // * 10초가 지나고 백에서 프론트에서 전달한 콜백 함수를 호출하면, 프론트에서 해당 함수를 사용한다.
     // * 백엔드가 이 코드를 실행하는 것이 아니라, 호출만 한다!
     done(); // * 프론트에서 메세지 창 HTML 출력
 
     // * 입장한 방에 있는 모든 사람들에게 이벤트 전달(나를 제외)
-    socket.to(roomName).emit('welcome', socket.nickname);
+    socket.to(roomName).emit('welcome', socket.nickname, countRoom(roomName));
     // * 현재 서버안에 있는 모든 방의 array를 전달
     wsServer.sockets.emit("room_change", publicRoom())
   })
@@ -74,7 +79,9 @@ wsServer.on("connection", socket => {
   // * 방에서 나가려고 할 때,
   socket.on('disconnecting', ()=>{
     socket.rooms.forEach((room) => {
-        socket.to(room).emit('bye', socket.nickname)
+        console.log('room: ', room)
+        // * countRoom(roomName)-1: 방에 나가기 직전이라 본인이 포함된 수가 출력될 것이기 때문에 -1해준다.
+        socket.to(room).emit('bye', socket.nickname, countRoom(room)-1)
     })
 
   })
