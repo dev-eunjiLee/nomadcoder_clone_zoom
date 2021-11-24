@@ -25,7 +25,7 @@ app.get("/*", (req, res) => res.redirect("/"));
 
 // * http 서버에 ws 서버 물리기 => 동일한 포트에서 http, ws request를 모두 처리할 수 있다. (웹소켓 서버만 만들어도 상관은 없다)
 const handleListen = () =>
-  console.log(`Listening on http or wss://localhost:3000`);
+  console.log(`Listening on http or wss://localhost:3001`);
 
 const httpServer = http.createServer(app); // * HTTP 서버
 // adminUI 적용 전: const wsServer = SocketIO(httpServer)// Socket.IO 사용하여 웹소켓 서버 셋팅 =>  라이브러리의 Server 클래스 사용
@@ -48,7 +48,7 @@ function publicRoom(){
 
     rooms.forEach((_, key) => {
         // * socket private room이 아닌 경우
-        if(sids.get(key) === undefined)
+        if(sids.get(key) === undefined){
             publicRooms.push(key)
         }
     });
@@ -118,4 +118,4 @@ wsServer.on("connection", socket => {
 
 // * new Websocket.Server() 파라미터 중 server값에 대한 정보
 // * @param {(http.Server|https.Server)} [options.server] A pre-created HTTP/S server to use
-httpServer.listen(3000, handleListen);
+httpServer.listen(3001, handleListen);
