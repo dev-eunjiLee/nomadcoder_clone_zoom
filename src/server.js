@@ -2,7 +2,9 @@ import http from "http"; // * node.js에 내장되어 있기 때문에 따로 �
 import WebSocket from "ws";
 import express from "express";
 import * as events from "events";
-import SocketIO from "socket.io"
+import {Server} from "socket.io"
+import { instrument } from "@socket.io/admin-ui"
+
 
 const app = express();
 
@@ -26,8 +28,18 @@ const handleListen = () =>
   console.log(`Listening on http or wss://localhost:3000`);
 
 const httpServer = http.createServer(app); // * HTTP 서버
-const wsServer = SocketIO(httpServer)// Socket.IO 사용하여 웹소켓 서버 셋팅 =>  라이브러리의 Server 클래스 사용
+// adminUI 적용 전: const wsServer = SocketIO(httpServer)// Socket.IO 사용하여 웹소켓 서버 셋팅 =>  라이브러리의 Server 클래스 사용
+// * adminUI 적용 후
+const wsServer = new Server(httpServer, {
+    cors: {
+        origin: ["https://admin.socket.io"], // * 해당 url에서 이 서버 접근하는 것을 허용
+        credentials: true
+    }
+});
 
+instrument(wsServer, {
+    auth: false // * 비밀번호 사용하도록 설정 가능
+})
 function publicRoom(){
     // * 어댑터로부터 socket의 id들과 방 이름을 받은 후, 퍼블릭 방만 골라서 리스트로 리턴
     const {sockets: {adapter: {sids, rooms}}} = wsServer;
@@ -36,7 +48,7 @@ function publicRoom(){
 
     rooms.forEach((_, key) => {
         // * socket private room이 아닌 경우
-        if(sids.get(key) === undefined){
+        if(sids.get(key) === undefined)
             publicRooms.push(key)
         }
     });
