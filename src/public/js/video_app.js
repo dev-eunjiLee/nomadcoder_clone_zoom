@@ -18,33 +18,46 @@ async function getCameras(){
         const cameras = devices.filter((device) =>
             device.kind === "videoinput" // * 해당 디바이스 카메라인 경우만을 모아서 새로운 배열 생성
         );
+
         cameras.forEach((camera) => {
             const option = document.createElement("option");
             option.value = camera.deviceId;
             option.innerText = camera.label
             camerasSelect.appendChild(option);
         })
+        // * 나는 카메라가 1개 밖에 없어서 임의의 값을 하나 추가했다.
+        const option = document.createElement("option");
+        option.value = "dummyDeviceId";
+        option.innerText = "dummyCameraLabel"
+        camerasSelect.appendChild(option);
     } catch (e){
         console.log(e)
     }
 }
 
-async function getMedia(){
+async function getMedia(deviceId){
+    const initialConstraints = {
+        audio: true, // * 집 컴퓨터에서 소리가 울려서 임시로 꺼둠
+        video: {facingMode: "user"}
+    }
+    const cameraConstraints = {
+        audio: true, // * 집 컴퓨터에서 소리가 울려서 임시로 꺼둠
+        video: {deviceId: {exact: deviceId}}
+    }
     try {
         // * 현재 연결된 미디어 입력장치에 접근할 수 있는 MediaDevices 객체를 반환
-        myStream = await navigator.mediaDevices.getUserMedia({
-            audio: true, // * 집 컴퓨터에서 소리가 울려서 임시로 꺼둠
-            video: true
-        })
+        // * deviceId가 있는 경우 특정 ID값으로 셋팅해서 getUserMedia던짐
+        myStream = await navigator.mediaDevices.getUserMedia(
+            deviceId? cameraConstraints : initialConstraints
+        )
         myFace.srcObject = myStream;
-        await getCameras();
+        if(!deviceId){ await getCameras();}
     } catch(e){
         console.log(e);
     }
 }
 
 
-getMedia();
 
 function handleMuteClick() {
     myStream.getAudioTracks().forEach((track) => {
@@ -62,6 +75,7 @@ function handleMuteClick() {
     }
 }
 function handlCameraClick() {
+    console.log('handleCameraChange: ', handleCameraChange)
     myStream.getVideoTracks().forEach((track) => {
         // * enabled가 true였으면 false, false였으면 true가 된다.
         track.enabled = !track.enabled;
@@ -75,6 +89,13 @@ function handlCameraClick() {
     }
 }
 
+async function handleCameraChange(){
+    console.log(camerasSelect.value);
+    // * getMedia를 한 번 더 호출해 STREAM을 변경해준다.(카메라 변경을 위해)
+    await getMedia(camerasSelect.value);
+}
 
-muteBtn.addEventListener("click", handleMuteClick)
-cameraBtn.addEventListener("click", handlCameraClick)
+getMedia();
+muteBtn.addEventListener("click", handleMuteClick);
+cameraBtn.addEventListener("click", handlCameraClick);
+camerasSelect.addEventListener('input', handleCameraChange);
