@@ -18,18 +18,24 @@ async function getCameras(){
         const cameras = devices.filter((device) =>
             device.kind === "videoinput" // * 해당 디바이스 카메라인 경우만을 모아서 새로운 배열 생성
         );
-
-        cameras.forEach((camera) => {
-            const option = document.createElement("option");
-            option.value = camera.deviceId;
-            option.innerText = camera.label
-            camerasSelect.appendChild(option);
-        })
+        const currentCamera = myStream.getVideoTracks()[0];
         // * 나는 카메라가 1개 밖에 없어서 임의의 값을 하나 추가했다.
         const option = document.createElement("option");
         option.value = "dummyDeviceId";
         option.innerText = "dummyCameraLabel"
         camerasSelect.appendChild(option);
+
+        // * 실제 카메라 목록 출력
+        cameras.forEach((camera) => {
+            const option = document.createElement("option");
+            option.value = camera.deviceId;
+            option.innerText = camera.label
+            if(currentCamera.label === camera.label){
+                option.selected = true;
+            }
+            camerasSelect.appendChild(option);
+        })
+
     } catch (e){
         console.log(e)
     }
@@ -37,11 +43,11 @@ async function getCameras(){
 
 async function getMedia(deviceId){
     const initialConstraints = {
-        audio: true, // * 집 컴퓨터에서 소리가 울려서 임시로 꺼둠
-        video: {facingMode: "user"}
+        audio: true,
+        video: {facingMode: "user"} // * 전면 카메라
     }
     const cameraConstraints = {
-        audio: true, // * 집 컴퓨터에서 소리가 울려서 임시로 꺼둠
+        audio: true,
         video: {deviceId: {exact: deviceId}}
     }
     try {
