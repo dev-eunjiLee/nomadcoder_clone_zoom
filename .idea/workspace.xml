@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="12495ece-d039-40d3-90c7-4a7523ee7f1f" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/public/view/video_home.pug" beforeDir="false" afterPath="$PROJECT_DIR$/src/public/view/video_home.pug" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,7 +109,7 @@
       <workItem from="1638195572247" duration="1985000" />
       <workItem from="1638282075819" duration="790000" />
       <workItem from="1638368666139" duration="555000" />
-      <workItem from="1638369373599" duration="81000" />
+      <workItem from="1638369373599" duration="255000" />
     </task>
     <servers />
   </component>
