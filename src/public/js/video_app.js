@@ -63,8 +63,6 @@ async function getMedia(deviceId){
     }
 }
 
-
-
 function handleMuteClick() {
     myStream.getAudioTracks().forEach((track) => {
         // * enabled가 true였으면 false, false였으면 true가 된다.
@@ -80,6 +78,7 @@ function handleMuteClick() {
         muted = false;
     }
 }
+
 function handlCameraClick() {
     console.log('handleCameraChange: ', handleCameraChange)
     myStream.getVideoTracks().forEach((track) => {

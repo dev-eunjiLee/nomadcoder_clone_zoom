@@ -4,7 +4,6 @@ import express from "express";
 import * as events from "events";
 import SocketIO from "socket.io"
 
-
 const app = express();
 
 // * PUG 셋팅
