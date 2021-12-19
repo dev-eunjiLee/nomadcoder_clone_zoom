@@ -23,4 +23,12 @@ const handleListen = () =>
 const httpServer = http.createServer(app);
 const wsServer = SocketIO(httpServer);
 
-httpServer.listen(3000, handleListen);
+wsServer.on('connection', (socket) => {
+	socket.on('join_room', (roomName, done) => {
+		socket.join(roomName);
+		done();// * 프론트에서 선언한 함수를 여기서 실행
+		socket.to(roomName).emit("welcome") // * 입장한 방에 welcome 이벤트 뿌리기
+	});
+});
+
+httpServer.listen(3001, handleListen);
